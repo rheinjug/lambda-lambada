@@ -1,0 +1,97 @@
+= Lambda Lambada: Funktionen höherer Ordnung
+16.03.2021
+:icons: font
+:icon-set: octicon
+:source-highlighter: rouge
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+== Einsteigervideo
+
+Wir haben für euch ein kurzes https://youtu.be/lKzJkiSvgpc[Video] hochgeladen, in dem Funktionen höherer Ordnung eingeführt werden.
+
+== Higher Order Functions
+
+Eine Funktion höherer Ordnung ist eine Funktion, die andere Funktionen als Parameter entgegennimmt, oder zurückgibt. Wir wollen hier natürlich Lambda-Ausdrücke oder Methodenreferenzen verwenden und betrachten daher ausschließlich Funktionen, die funktionale Interfaces als Parameter entgegennehmen oder als Rückgabetyp haben. 
+
+== Aufgaben für Einsteiger:innen
+
+=== Gefiltert 
+
+In der Klasse `Demo` ist ein Beispiel, wie wir `map` implementieren könnten. Die Funktion bekommt eine Funktion `f` übergeben, die Elemente vom Typ A in Elemente vom Typ B umwandelt (A und B können auch derselbe Typ sein). Außerdem bekommt die Funktion eine Kollektion von Elementen vom Typ A übergeben. Die Rückgabe ist eine Kollektion, in der alle Elemente der Eingabeliste mithilfe der Funktion `f` umgewandelt wurden.
+
+**Aufgaben**
+
+* Schreib eine Funktion `filter`, die eine Kollektion von Elementen vom Typ A und ein Prädikat, das Elemente vom Typ A prüft, übergeben bekommt. Die Rückgabe ist eine Kollektion, in der nur noch die Werte vorhanden sind, für die das Prädikat wahr ist. 
+
+=== Doppelt gemoppelt
+
+Im Video haben wir das Beispiel `compose` gesehen, bei dem zwei Funktionen nacheinander auf einen Wert angewandt werden. 
+[source, java]
+----
+static <A,B,C> Function<A,C> compose(Function <B,C> g, Function<A,B> f) {
+  return a -> g.apply(f.apply(a));
+}
+----
+
+Wir wollen uns an einer Version versuchen, die weniger kompliziert ist. Statt zwei unterschiedliche Funktionen wollen wir einen `UnaryOperator` verwenden. Ein `UnaryOperator` ist im Grunde eine Funktion, bei der ein- und Ausgabetyp identisch ist. Wir können also den Operator beliebig oft hintereinander anwenden. 
+
+**Aufgaben**
+
+* Schreib eine Funktion `static <T> UnaryOperator<T> applyTwice(UnaryOperator<T> f)`, die einen `UnaryOperator` f als Parameter bekommt und einen `UnaryOperator` zurückgibt, der f zweifach anwendet. 
+
+== Aufgaben für Fortgeschrittene
+
+=== Flachgeklopft
+
+Eine Funktion, die üblicherweise in keiner Bibliothek von Funktionen höherer Ordnung fehlen darf ist `mapcat`, das ganz ähnlich wie `map` funktioniert. Die übergebene Funktion wandelt aber Elemente vom Typ A in Elemente vom Typ Collection<B> um. Ein Beispiel für eine Eingabe von `mapcat` ist eine Funktion, die beide Wurzeln einer Zahl ausrechnet. 
++
+[source, java]
+----
+static Collection<Double> wurzeln(Integer n) {
+  double sqrt = Math.sqrt(n);
+  return List.of(-sqrt, sqrt);
+}
+----
++
+Das normale `map` hätte den Rückgabetyp `Collection<Collection<B>>`, wir wollen aber `Collection<B>` zurückbekommen. Die erzeugten Kollektionen müssen also "flachgeklopft" werden. 
+
+**Aufgaben**
+
+* Schreib die Funktion `static <A,B> Collection<B> mapcat(Function<A,Collection<B>> f, Collection<A> c)`.
+ 
+=== reduce: Die Mutter aller HOF
+
+Die `reduce` Funktion ist etwas ganz Besonderes. Viele andere Funktionen lassen sich durch geeignete Wahl von Startwert und reduce Funktion implementieren. 
+
+**Aufgaben**
+
+* Schreib die `map` Funktion in `Reduce` so, dass `reduce` mit einem geeigneten Startwert und reduce Funktion aufgerufen wird.
+
+* Welchen großen Nachteil hat die Implementierung von `map` mithilfe von `reduce` gegenüber der direkten Implementierung in der Klasse `Demo`? 
+
+=== Bis in alle Ewigkeit gemoppelt
+
+Wir haben schon gesehen, dass die Rückgabe eines `UnaryOperator` wieder eine Eingabe für denselben Operator sein kann. Wir wollen nun eine Funktion iterativ anwenden.
+
+* Schreib eine Funktion `static <T> UnaryOperator<T> applyNTimes(int n, UnaryOperator<T> f)`, die einen `UnaryOperator` f als Parameter bekommt und einen `UnaryOperator` zurückgibt, der f n-fach anwendet. 
+
+* Als Nächstes wollen wir die Abbruchbedingung etwas flexibler gestalten. Schreib eine Funktion `static <T> UnaryOperator<T> fixed(UnaryOperator<T> f, BiPredicate<T,T> stop)`, die einen `UnaryOperator` f als Parameter bekommt und einen `UnaryOperator` zurückgibt, der f so lange anwendet, bis das `stop` Prädikat wahr ergibt, wenn wir die beiden letzten berechneten Werte einsetzt.
+
+Die `fixed` Funktion können wir verwenden, um zum Beispiel das Heron Verfahren zu implementieren. Wenn du `fixed` korrekt berechnet hast, dann berechnet folgende Methode die Quadratwurzel einer Zahl auf 5 Nachkommastellen genau.
+
+[source, java]
+----
+static double heron(double n) {
+  UnaryOperator<Double> f = x -> x - (x*x-n)/(2*x);
+  BiPredicate<Double,Double> stop = (x0,x1) -> Math.abs(x1-x0) < 1E-5;
+  UnaryOperator<Double> heron = fixed(f, stop);
+  return heron.apply(n);
+}
+----
+

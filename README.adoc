@@ -1,0 +1,59 @@
+= Lambda Lambada, JavaLand 2021
+16.03.2021
+:icons: font
+:icon-set: octicon
+:source-highlighter: rouge
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+[quote,Alan Perlis]
+Fools ignore complexity.
+Pragmatists suffer it.
+Some can avoid it.
+Geniuses remove it.
+
+NOTE: Dieser Workshop richtet sich an Einsteiger:innen und fortgeschrittene
+Entwickler:innen der funktionalen Programmierkonzepte mit Java.
+
+
+== Hallo und herzlich willkommen!
+
+Wir haben für euch einige Übungen vorbereitet, mit denen ihr euer Wissen in Themen rund um die funktionale Programmierung mit Java vertiefen könnt.
+
+Wir haben den Workshop in drei Themenbereiche aufgeteilt: link:lambda/README.adoc[Lambda-Ausdrücke und Methodenreferenzen], link:hof/README.adoc[Higher Order Funktionen] und link:streams/README.adoc[Streams]. Jedes Thema enthält Übungen für Einsteiger:innen und fortgeschrittene Entwickler:innen. Ihr solltet aber ein Java Grundwissen mitbringen. 
+
+Die einzelnen Ordner enthalten die Aufgaben und zugehörigen Beispielcode. Wir haben den Code als Gradle Projekte vorbereitet. 
+
+IMPORTANT: Ihr müsst die Übungen nicht nacheinander absolvieren, sondern könnt
+auch jederzeit irgendwoanders weitermachen. Außerdem sind die Übungen nur
+Vorschläge – dieser Lernprozess lebt auch davon, dass ihr eigene Ideen einbringt
+und eigene Probleme damit löst. Die Aufgaben können dafür auch schlicht als
+Aufhänger dienen. Wir empfehlen aber allen sich zumindest mal die leicht
+wirkenden Aufgaben anzuschauen.
+
+Während der Übungen stehen wir, Jens und Christian, euch gerne zur Verfügung.
+Sprecht uns einfach an! Wir gehen aber auch durch die einzelnen Sessions. Helft
+euch auch gegenseitig! Zusammen ergänzt ihr euch wunderbar und braucht
+wahrscheinlich gar keine Hilfe und könnt dann gemeinsam noch weiter wachsen.
+
+
+=== Warum machen wir das hier?
+
+Java 8 gibt es schon seit dem 18.03.2014, also fast sieben Jahre. Dort wurden viele funktionale Konzepte eingebracht, die unser als Entwickler:in helfen verständlicheren und besser wartbaren Code zu entwickeln. Im Einstiegsvideo zeigt Jens euch was genau damit gemeint ist.
+
+Diese Konzepte sind alle nicht neu, aber so spannend, dass wir euch ermuntern möchten sich damit einmal zu befassen. Außerdem macht es sehr viel Spaß zusammen diese Aufgaben durchzuspielen 🙃
+
+
+=== Lust auf mehr zu dieser Thematik?
+
+Wenn du im Nachgang noch Lust auf mehr Stoff hast, haben wir noch ein https://youtu.be/HVYHpNXY2ow[Langfassung der Videos mit Coding Demos].
+
+
+== Copyright
+
+(c) 2020-2021 https://github.com/bendisposto[Jens Bendisposto] und https://github.com/n2o[Christian Meter]

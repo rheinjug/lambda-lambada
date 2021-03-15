@@ -1,0 +1,250 @@
+= Lambda Lambada: Streams
+16.03.2021
+:icons: font
+:icon-set: octicon
+:source-highlighter: rouge
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+== Einsteigervideo
+
+Wir haben für euch kurze Videos hochgeladen zu den Themen https://youtu.be/LbYAilJahDE[Streams] und https://youtu.be/yBWVvm5VANU[parallele Streams].
+
+== Streams 
+
+Funktionale Programmierkonzepte erfordern ein Umdenken in der Art wie wir Daten
+betrachten. Wir betrachten beispielsweise weniger einzelne Daten einer
+Collection für sich, sondern überlegen, wie wir mittels kleiner Funktionen
+unsere Daten so transformieren können, wie wir sie für die weitere Verwendung
+benötigen.
+
+Streams bieten mächtige Möglichkeiten auf Datenstrukturen verkettete Operationen (ggf. sogar parallel) durchzuführen. Haben wir
+beispielsweise eine Liste von Zahlen, können wir mit der Methode `.stream()` einen Datenstrom aus dieser Collection erzeugen:
+
+[source,java]
+----
+List<Integer> integersList = List.of(1, 2, 3, 4, 5); // in Java 8: Arrays.asList(1,2,3,4,5)
+Stream<Integer> streamFromList = integersList.stream();
+
+Integer[] integersArray = {1,2,3,4,5};
+Stream<Integer> streamFromArray = Arrays.stream(integersArray);
+----
+
+NOTE: Auf Streams können viele Operationen durchgeführt werden. Kopiere den oben
+angegebenen Code in schaue, welche Stream-Operationen vorgeschlagen werden.
+
+Bei Streams wird unterschieden zwischen intermediären und terminalen Operationen. Intermediäre Operationen werden auf einem Stream aufgerufen und geben einen Stream zurück. Intermediäre Operationen definieren eine Verarbeitungspipeline, die aber erst ausgeführt wird, wenn wir eine terminale Operation aufrufen. Terminale Operationen erzeugen aus dem Stream einen normalen Wert, wie zum Beispiel eine Zahl, eine Liste, etc. 
+
+Ein Beispiel ist die Funktion `map`, die, wenn wir sie auf einer Stream-Instanz aufrufen die Elemente des Streams transformiert.  
+
+So können wir `map` beispielsweise die Quadratfunktion als Lambda übergeben.
+
+[source,java]
+----
+List<Integer> integers = Arrays.asList(1, 2, 3, 4, 5);
+integers.stream()
+        .map(i -> i * i);
+----
+
+Es können beliebig viele weitere Stream-Operationen durchgeführt und angehangen
+werden:
+
+[source,java]
+----
+integers.stream()
+        .map(i -> i * i)
+        .filter(i -> i > 4);
+----
+
+Ein Beispiel für eine terminale Operation ist `forEach`, das eine `Consumer` Instanz übergeben bekommt und dann die `accept` Methode für jedes Element des Streams aufruft. 
+
+[source,java]
+----
+integers.stream()
+        .map(i -> i * i)
+        .filter(i -> i > 4)
+        .forEach(i -> System.out.println(i));
+----
+
+Natürlich können wir auch Methodenreferenzen verwenden. 
+
+Ein anderes Beispiel für eine terminale Operation ist `collect`, das eine mutable Reduktion durchführt. Wir können `collect` von Hand mit einem `Supplier<A>` für das Erzeugen von initialen Akkumulatoren, einem `BiConsumer<A,E>` zur Reduktion der Stream-Elemente und einem `BiConsumer<A,A>` für das Zusammenführen von zwei Akkumulatoren aufrufen. 
+
+Eine Alternative ist die Verwendung einer `Collector` Instanz, die die Funktionen in einer Klasse kapselt und dafür sorgen kann, dass die Funktionen zueinander passen. Es gibt in der Hilfsklasse `Collectors` eine ganze Reihe an statischen Methoden, die Kollektoren bereitstellen. Wir finden dort unter anderem Kollektoren die Streams zu "normalen" Java Collections (z.B. Listen) aufsammeln.
+
+Wenn wir zum Beispiel eine Liste von Zahlen quadrieren wollen und am Ende wieder eine Liste benötigen, können wir das so schreiben:
+
+[source,java]
+----
+integers.stream()
+        .map(i -> i * i)
+        .collect(Collectors.toList());
+----
+
+Es gibt aber auch komplexere Kollektoren, die das Gruppieren von Stream-Werten, ähnlich wie `GROUP BY` in Datenbanken, ermöglichen. Das folgende Beispiel gruppiert die Zahlen im Eingabestrom nach ihrer Restklasse modulo 3.
+
+[source,java]
+----
+List<Integer> integers = List.of(2, 6, 2, 1, 8, 3, 3, 7, 9, 2, 1, 0, 2, 3, 1, 5, 2);
+Map<Integer, List<Integer>> collect =
+    integers.stream().collect(Collectors.groupingBy(e -> e % 3));
+----
+
+Wir können den `groupingBy` Collector in diesem Fall sogar noch mit einem weiteren Collector kombinieren, um die einzelnen Gruppierungen weiterzuverarbeiten.
+
+=== Sonderformen von Streams
+
+Es gibt einige Sonderformen von Streams, beispielsweise IntStream, LongStream
+und DoubleStream. Diese bieten ein paar Komfortfunktionen. Beispielsweise können
+Streams direkt befüllt werden mit:
+
+[source,java]
+----
+IntStream.range(0, 10).sum()
+----
+
+Es wird ein Stream mit den Zahlen von 0 bis 9 generiert und dann die Summe
+darüber gebildet. Dies sind optimierte Funktionen, die besonders gut auf
+bestimmten Datentypen funktionieren. Es lohnt sich manchmal zwischen den Streams
+hin und her zu konvertieren, beispielsweise mit `mapToInt`, welches einen
+IntStream zurückgibt, oder `mapToObj`, welches entsprechende Referenzen von
+Objekten zurückgibt.
+
+== Aufgaben für Einsteiger:innen
+
+Experimentieren wir nun mit Streams und Lambdas herum. 
+
+Die Übungen dienen nur als Aufhänger – experimentiert ruhig selbst ein wenig mit
+den APIs herum.
+
+=== Aufwärmübungen
+
+Zunächst wollen wir einmal einige Aufwärmübungen machen. Für diese Aufgaben ist die Klasse `IntStream` nützlich. Schau auf jeden Fall einmal, welche Methoden die Klasse hat. 
+
+NOTE: Es gibt Tests für die
+Funktionen, welche in der entsprechenden Testklasse aktiviert werden müssen,
+indem `@Disabled` entfernt wird.
+
+**Aufgaben:**
+
+* In der Klasse `Lambda` soll der Mittelwert von Zahlen berechnet werden. Wandle das Array in einen `IntStream` um und schau dir an, welche Methoden die Klasse hat.
+
+* In der Klasse `Filter` wollen wir bestimmte Werte herausfiltern. 
+
+=== Noch'n Toast, noch'n Ei
+
+Wir wollen unsere Lebensmittel im Blick behalten. Die Klasse `Inventar` speichert, was wir gelagert haben und manche Lebensmittel werden leider schlecht. 
+
+Mit `collect` kann ein Stream die Auswertung einleiten und die Daten in einer
+anderen Datenstruktur zur weiteren Verarbeitung zusammenpacken, beispielsweise
+alle Strings in einer Liste sammeln. Dafür muss dem `collect` die Funktion
+`Collectors.toList()` aufgerufen werden.
+
+`collect` ist noch mächtiger, aber häufig holt man sich so die Daten aus den
+Streams und verpackt sie so in eine Liste für den weiteren normalen
+Programmablauf.
+
+**Aufgaben:**
+
+* Sorge dafür, dass die Tests in `InventarTest` durchlaufen. Natürlich sollen Streams benutzt werden.
+
+=== Klausurpunkte
+
+Jetzt geht es ans Eingemachte. In jedem Semester müssen wir entscheiden, wer die Klausur bestanden hat. Häufig arbeiten wir
+mit CSVs, da das scheinbar das universell verständliche Format ist. Wir wollen nun eine solche CSV Datei einlesen, Objekte daraus generieren und schauen, wer nun insgesamt
+bestanden hat. Weitere Statistiken, wie "wer hat die Hauptklausur bestanden?" oder "Welche Klausur ist im Durchschnitt besser ausgefallen?" können hier auch noch bearbeitet werden. Bringe die Tests in `KlausurpunkteTest` zum Laufen.
+
+
+**Aufgaben:**
+
+* Vervollständige die Implementierung in der Klasse `Klausurpunkte`.
+Es gibt Tests für die Implementierung in `KlausurpunkteTest`.
+
+
+=== Frequency
+
+Wir wollen ein Programm schreiben, welches die Häufigkeit von Wörtern in einer Textdatei zählt.
+Das Gerüst ist schon fertig, es fehlt nur noch das Zählen der Worte.
+Wir wollen Groß-/Kleinschreibung nicht unterscheiden, `Bar` und `baR`
+sollen das gleiche Wort in der Zählung sein. Die Datei soll nur aus Wörtern ohne Satzzeichen bestehen.
+
+**Aufgaben:**
+
+* Implementiere die Berechnung von `frequency` in der Klasse `Worthaeufigkeit`.
++
+TIP: Die Kollektoren aus der Klasse `Collectors` sind hier ziemlich hilfreich.
+
+== Aufgaben für Fortgeschrittene
+
+=== Mapping, Monster, Mutationen
+
+Beim (Ex)Präsidentengolf ist etwas schiefgelaufen. Der Test `PresidentialGolfingTest`schlägt fehl.
+
+**Aufgaben:**
+
+* Was ist genau das Problem?
+* Was können wir daraus lernen über den Zusammenhang zwischen Streams und der
+zugrundeliegenden Collection?
+* Welche Regel können wir für intermediäre Stream Operationen ableiten?
+
+=== Faule Socke
+Nicht einmal zurücklehnen und kassieren schaffen wir richtig! In der `print` Methode der
+Klasse `ZuruecklehnenUndKassieren` gibt es ein Problem. Der `Printer` wird nicht aufgerufen.
+
+**Aufgaben:**
+
+* Wie kommt das Problem zustande?
+* Was unterscheidet die Stream-Methoden `map` und `forEach`?
+* Bekommen wir das auch mit `map` (auch wenn das nicht empfohlen ist) ans Laufen?
+* Was müssen wir bei Streams immer im Blick haben?
+
+
+== Parallele Streams
+
+Wenn wir Streams parallel verarbeiten, gibt es eine ganze Reihe von Aspekten, die wir im Auge behalten müssen.
+In den folgenden Aufgaben schauen wir uns Fälle an, wo sich die Resultate unterscheiden und versuchen die Probleme
+zu beheben.
+
+
+=== ForEach
+
+Mit der terminalen Operation `forEach` können wir einen Seiteneffekt für jedes Element des Streams bewirken,
+beispielsweise können wir die Elemente ausgeben. Leider verhält sich `forEach` anders in parallelen Streams.
+
+**Aufgaben:**
+
+* Repariere die `forEachParallel` Methode der Klasse `ForEach` so, dass die Tests durchlaufen.
+Die parallele Berechnung von `map` und `filter` soll dabei erhalten bleiben.
+
+
+=== Reducing
+
+Schauen wir uns an, wie `reduce` auf Streams funktioniert. Im Test `ReducingTest` sind einige Tests, bei
+denen sich die parallele Berechnung von der Berechnung auf einem sequentiellen Stream unterscheidet. Es gibt zwei
+unterschiedliche Gründe aus denen `addieren` und `implication` falsche Resultate liefern. Die
+Methode `subtrahieren` scheitert aus der Kombination beider Gründe.
+
+**Aufgaben:**
+
+* Woran liegt es, dass sich die Berechnungen unterscheiden?
+* Repariere die Implementierungen. Dabei soll die parallele Berechnung nach Möglichkeit erhalten bleiben.
+
+
+=== Collector
+
+Für die Bewertung einer Klausur wollen wir einige Werte (minimale Punktzahl, maximale Punktzahl,
+Durchschnittspunktzahl und die Anzahl der Klausuren, die bestanden haben) ausrechnen. Wir könnten das machen, indem
+wir mehrfach über die Liste iterieren, wir möchten aber versuchen, mit einem Durchgang auszukommen.
+Dazu benötigen wir eine Implementierung des Collector Interfaces.
+
+**Aufgaben:**
+
+* Ergänze die Implementierung des `KlausurCollectors`. Die Implementierung der Methode `characteristics` ist
+fertig. Eventuell ist es sinnvoll, auch in der Klasse `ZwischenErgebnis` Code hinzuzufügen.
+* Probiere aus, ob deine Implementierung auch mit einem parallelen Stream funktioniert.
+

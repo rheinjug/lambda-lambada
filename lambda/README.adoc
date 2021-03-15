@@ -1,0 +1,176 @@
+= Lambda Lambada: Funktionale Interfaces, Lambda-Ausdrücke und Methodenreferenzen
+16.03.2021
+:icons: font
+:icon-set: octicon
+:source-highlighter: rouge
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+== Einsteigervideo
+
+Wir haben für euch ein kurzes https://youtu.be/9QFsAI90o6I[Video] hochgeladen, in dem die Themen Lambda-Ausdrücke, Methodenreferenzen und funktionale Interfaces eingeführt werden.
+
+== Lambdas und Methodenreferenzen
+
+Lambda-Funktionen sind kleine Funktionen, die mit wenig Syntax definiert werden.
+Dabei sollten die Methoden entsprechend kurz und prägnant sein, sodass wir sie hoffentlich mit einem Blick verstehen können.
+
+Ein Beispiel für die Verwendung von Lambda-Ausdrücken anstatt anonymer innerer Klassen ist das Starten eines Threads.
+Vor Java 8 war relativ viel Code notwendig:
+
+[source,java]
+----
+// Vor Java 8:
+new Thread(new Runnable() {
+    @Override
+    public void run() {
+        System.out.println("Viel Code zu schreiben für einen Thread :-/");
+    }
+}).start();
+----
+
+Mit Lambdas kann es so aussehen:
+
+[source,java]
+----
+new Thread(() -> System.out.println("Besser :-)")).start();
+----
+
+Das funktioniert, weil `Runnable` ein
+https://docs.oracle.com/javase/8/docs/api/java/lang/FunctionalInterface.html[FunctionalInterface]
+ist, also ein Interface, welches genau eine abstrakte Methode beinhaltet.
+Mit dem Lambda geben wir die Implementierung für diese abstrakte Methode an und führen sie aus.
+
+Die Syntax für Lambdas ist:
+
+[source,java]
+----
+( Lambda-Parameter ) -> { Anweisungen }
+----
+
+Wenn der Block von Anweisungen nur aus einem `return` besteht, können wir sowohl die geschweiften Klammern, als auch das return weglassen.
+Ähnliches gilt bei Parametern dea Lambda-Ausdrucks. Wenn wir nur einen Parameter haben, dürfen wir die runden Klammern auslassen.
+Der Ausdruck `e -> e * e` ist also ein gültiger Lambda-Ausdruck.
+
+Gelegentlich stoßen wir auf Lambda-Ausdrücke der Form `(a,b,c) -> doSomething(a,b,c)`, wo die Parameter des Lambda-Ausdrucks an eine Methode weitergereicht werden.
+In diesen Fällen können wir Methodenreferenzen verwenden.
+
+Die Syntax für Methodenreferenzen ist:
+
+[source,java]
+----
+KlasseOderInstanz::methode
+----
+
+== Aufgaben für Einsteiger:innen
+
+=== Funktionale Interfaces
+
+Das Interface `Greeter` im Paket `greet` ist ein funktionales Interface.
+Wir wollen zunächst ein wenig mit dem Interface experimentieren.
+Wenn du lieber direkt mit der Verwendung weitermachen willst, kannst du diesen Teil einfach überspringen.
+
+**Aufgaben**
+
+* Füge eine zweite Methode `void foo()` hinzu und beobachte, was passiert.
+* Wandele die zweite Methode in eine default Methode um.
++
+[source,java]
+----
+default foo() {System.out.println("bar");}
+----
+
+* Was passiert, wenn du alle Methoden entfernst?
+* Warum dürfen funktionale Interfaces eigentlich nur genau eine abstrakte Methode haben?
+
+=== Lambda-Ausdrücke
+
+Die Klasse `GreeterTest` enthält einige Tests, bei denen du eigene Lambda-Ausdrücke schreiben sollst, die mit unserem `Greeter` Interface kompatibel sind.
+
+NOTE: Wir wollen uns hier nur die Verwendung von Lambda-Ausdrücken anschauen.
+Der Code ist nicht besonders sinnvoll ;-)
+
+**Aufgaben**
+
+* Entferne schrittweise die `@Disabled` Annotationen und bringe die Tests zum Laufen.
+
+=== Catch me if you can
+
+Für die Verwendung von Variablen, die außerhalb des Lambda-Ausdrucks deklariert sind, gelten die Regeln analog zu den Regeln für anonyme innerer Klassen.
+Im Package `closure` findest du drei Klassen mit Beispielen.
+
+**Aufgaben:**
+
+* Schau dir die Klasse `ClosureLocals` an, in der innerhalb der Lambda-Ausdrücke lokale Variablen verwendet werden.
+Entferne bei den markierten Zeilen die Kommentare und versuche zu verstehen was passiert.
+
+* Schau dir die Klasse `ClosureStatic` an, in der innerhalb der Lambda-Ausdrücke eine statische Variable verwendet wird.
+Entferne bei der markierten Zeile die Kommentare und versuche zu verstehen was passiert.
+
+* Schau dir die Klasse `ClosureInstance` an, in der innerhalb der Lambda-Ausdrücke eine Instanzvariable verwendet wird.
+Entferne bei der markierten Zeile die Kommentare und versuche zu verstehen was passiert.
+
+* Schreib einen der Lambda-Ausdrücke in `ClosureLocals` in eine anonyme innere Klasse um.
++
+NOTE: Wenn du schon länger mit Java zu tun hast, wunderst du dich vielleicht, dass du die Variablen nicht als `final` deklarieren musst.
+Seit Java 8 sind alle Variablen standardmäßig final und werden bei einer zweiten Zuweisung als nicht-final markiert.
+Eine Variable, die nicht mit `final` markiert ist, aber nur einmal zugewiesen wird, wird als effectively final bezeichnet.
+
+=== Methodenreferenzen
+
+* Wir haben eine Liste von Zahlen und wollen diese Liste (warum auch immer) nach dem kleinsten Primfaktor der Zahlen sortieren.
+Der Code ist in der Klasse `PrimeComperator` schon implementiert und es gibt auch eine `main` Methode mit einem Beispiel.
+
+**Aufgaben:**
+
+* Schreib den Ausdruck `(a, b) -> compareByPrimeFactor(a, b)` in eine Methodenreferenz um.
+* Schreib den Ausdruck `s -> { System.out.println(s);}` in eine Methodenreferenz um.
+Du sollst aber keine neue Methode schreiben!
+
+Schreib beide Lambda-Ausdrücke in Methodenreferenzen um.
+
+== Aufgaben für Fortgeschrittene
+
+=== Supplier in JUnit
+
+Wenn in JUnit 5 getestet werden soll, ob eine bestimmte Exception geworfen wird, benutzen wir die Methode `assertThrows`, die die erwartete Exception-Klasse und einen Supplier übergeben bekommt.
+Folgendes Beispiel aus der JUnit Dokumentation zeigt die Verwendung eines Lambda-Ausdrucks im Aufruf der Methode.
++
+[source,java]
+----
+@Test
+void exceptionTesting() {
+  Exception exception = assertThrows(ArithmeticException.class, () -> calculator.divide(1, 0));
+  assertEquals("/ by zero", exception.getMessage());
+}
+----
+
+**Aufgaben:**
+
+* Warum muss hier unbedingt ein Supplier benutzt werden?
+
+=== Was ist this?
+
+In Fällen, wo wir früher eine anonyme Klasse geschrieben haben, die ein funktionales Interface (z.B. `Runnable`, `ActionListener` aus AWT, ...) implementiert, können wir heute einen Lambda-Ausdruck verwenden.
+Es gibt allerdings Unterschiede zwischen den beiden Varianten.
+In der Klasse `AnonymousInnerClass` sind zwei Varianten implementiert, wie wir `Runnable` Implementierungen nebenläufig ausführen können.
+
+**Aufgaben:**
+
+* Finde mit etwas Debugging Code heraus, worauf sich `this` innerhalb des Lambda-Ausdrucks bzw. der anonymen inneren Klasse  bezieht.
+
+* Ändere die Implementierung, die die anonyme innere Klasse verwendet so ab, dass du Zugriff auf dasselbe Objekt hast, das im Lambda-Ausdruck in `this` gespeichert ist. Du wirst vermutlich eine zusätzliche Variable verwenden müssen anstelle von `this`.
+
+* Der Lambda-Ausdruck resultiert nicht in einer separaten Klasse.
+Wenn du Gradle verwendest, kannst du dir die Classfiles im Verzeichnis `build/classes/java/main/lambda_vs_innerclass` anschauen.
+Kommentiere auch einmal die Methode `run1` aus und schau dir an, welche Klassen dann erzeugt werden.
+
+* Wenn du Lust hast, schau dir auch einmal den disassemblierten Bytecode der Klasse mit `javap -v AnonymousInnerClass` an.
+Du stellst dann fest, dass an Byte 4 der beiden Methoden unterschiedlicher Code aufgerufen wird.
+Im Falle der anonymen inneren Klasse wird Speicher reserviert für die Klasse `AnonymousInnerClass$1`, im Falle des Lambda-Ausdrucks wird `invokedynamic` aufgerufen.
+Was `invokedynamic` genau macht, geht etwas über den Inhalt dieses Workshops hinaus, aber wenn es dich interessiert, gibt es ein ca. einstündiges https://youtu.be/MLksirK9nnE[Video] von Brian Goetz, das die Implementierungsdetails erklärt.
